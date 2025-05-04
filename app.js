@@ -12,30 +12,36 @@ app.listen(port, (err) => {
     console.log(`Server is listening on ${port}`);
 });
 
-const logger = (req, res, next) => {console.log(`${req.method} : Request received on ${req.url}`); next();}
+// const logger = (req, res, next) => {console.log(`${req.method} : Request received on ${req.url}`); next();}
 
-app.get('/', [logger], (req, res) => {
-    res.send("Hello World!");
-})
+// app.get('/', [logger], (req, res) => {
+//     res.send("Hello World!");
+// })
 
 const tasks = require('./task.json');
 
 app.get('/tasks', (req, res) => {
-    let filteredTasks = tasks;
+    res.send(tasks);
+});
+
+app.get('/sortedtasks', (req, res) => {
     let sortedTasks = tasks;
     if (req.query.sortBy === 'title'){
         sortedTasks = tasks.sort((a, b) => a.title.localeCompare(b.title));
         }
-    res.json(sortedTasks);
+    res.json(sortedTasks); 
+});
+
+app.get('/filteredtasks', (req, res) => {
+    let filteredTasks = tasks;
     if (typeof req.query.completed !== 'undefined'){
         const isCompleted = req.query.completed === 'true';
 
         filteredTasks = tasks.filter(task => task.completed === isCompleted);
     }
-    console.log(req.query);
-    res.send(tasks);
     res.json(filteredTasks); 
-});
+
+})
 
 app.get('/tasks/:id', (req, res) => {
     const taskId = parseInt(req.params.id, 10);
